@@ -60,7 +60,8 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
+    implementation(libs.material)
+    implementation(libs.material.icons.extended)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
@@ -68,7 +69,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.core.splashscreen)
-
+    implementation(libs.navigation.accompanist.animation)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
