@@ -53,6 +53,12 @@ sealed class BottomNavItem(
     )
 }
 
+val items = listOf(
+    BottomNavItem.Files,
+    BottomNavItem.Recent,
+    BottomNavItem.Tag,
+)
+
 @Composable
 fun BottomNavigationBar(controller: NavHostController) {
     val borderColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5F)
@@ -69,11 +75,7 @@ fun BottomNavigationBar(controller: NavHostController) {
                     1F
                 )
             }) {
-        val items = listOf(
-            BottomNavItem.Files,
-            BottomNavItem.Recent,
-            BottomNavItem.Tag,
-        )
+
 
         val stackEntry by controller.currentBackStackEntryAsState()
         val currentRoute = stackEntry?.destination?.route
