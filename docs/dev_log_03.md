@@ -11,6 +11,10 @@
 
 - I still need to figure out how to add the files count to each group card?
 
+App Looks like this as of today
+
+![Today Progress](./assets/photo_2023-04-21.jpeg)
+
 ## References
 
 1. [Jetpack Grids](https://www.valueof.io/blog/lazy-grids-gridcells-fixed-adaptive-custom-compose)
