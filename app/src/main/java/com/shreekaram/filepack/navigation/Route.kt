@@ -1,6 +1,6 @@
 package com.shreekaram.filepack.navigation
 
-sealed class Route(var id: String, var title: String) {
+sealed class Route(var id: String, var title: String, var args: String = "") {
     object Home : Route("home", "Home")
     object Files : Route("files", "Files")
     object Recent : Route("recent", "Recent")
@@ -8,5 +8,5 @@ sealed class Route(var id: String, var title: String) {
 
     object Search : Route("search", "Search")
     object Settings : Route("settings", "Settings")
-    object FolderSpace : Route("folder_space", "FolderSpace")
+    object FolderSpace : Route("folder_space", "FolderSpace", args = "?folderName={folderName}")
 }
