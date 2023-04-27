@@ -12,5 +12,6 @@ You can read them below.
 
 1. [Day 01](docs/dev_log_01.md)
 2. [Day 02](docs/dev_log_02.md)
-   3[Day 03](docs/dev_log_03.md)
-   4[Day 04](docs/dev_log_04.md)
+3. [Day 03](docs/dev_log_03.md)
+4. [Day 04](docs/dev_log_04.md)
+5. [Day 05](docs/dev_log_05.md)
