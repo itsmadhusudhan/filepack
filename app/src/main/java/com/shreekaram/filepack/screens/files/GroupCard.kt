@@ -26,24 +26,43 @@ import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Whatsapp
 import androidx.compose.ui.graphics.Color
 
+enum class GroupType {
+    ALL,
+    PHOTO,
+    VIDEO,
+    AUDIO,
+    DOCUMENT,
+    APK,
+    ARCHIVE
+}
+
 sealed class Groups(
+    val id: GroupType,
+    val title: String,
+    val icon: ImageVector,
+    val color: Color = Color.Black
+) {
+    object Photos : Groups(GroupType.PHOTO, "Photos", Icons.Filled.Photo)
+    object Videos : Groups(GroupType.VIDEO, "Videos", Icons.Filled.Videocam)
+    object Audio : Groups(GroupType.AUDIO, "Audio", Icons.Filled.MusicNote)
+    object Documents : Groups(GroupType.DOCUMENT, "Documents", Icons.Filled.InsertDriveFile)
+    object Apks : Groups(GroupType.APK, "APKs", Icons.Filled.Hexagon)
+    object Archives : Groups(GroupType.ARCHIVE, "Archives", Icons.Filled.Archive)
+
+}
+
+sealed class SourceGroup(
     val id: String,
     val title: String,
     val icon: ImageVector,
     val color: Color = Color.Black
 ) {
-    object Photos : Groups("photos", "Photos", Icons.Filled.Photo)
-    object Videos : Groups("videos", "Videos", Icons.Filled.Videocam)
-    object Audio : Groups("audio", "Audio", Icons.Filled.MusicNote)
-    object Documents : Groups("documents", "Documents", Icons.Filled.InsertDriveFile)
-    object Apks : Groups("apks", "APKs", Icons.Filled.Hexagon)
-    object Archives : Groups("archives", "Archives", Icons.Filled.Archive)
 
-    object WhatsApp : Groups("whatsapp", "WhatsApp", Icons.Filled.Whatsapp, Color(0xff25D366))
+    object WhatsApp : SourceGroup("whatsapp", "WhatsApp", Icons.Filled.Whatsapp, Color(0xff25D366))
     object Downloads :
-        Groups("downloads", "Downloads", Icons.Filled.ArrowDownward, Color(0xff25D366))
+        SourceGroup("downloads", "Downloads", Icons.Filled.ArrowDownward, Color(0xff25D366))
 
-    object Bluetooth : Groups("bluetooth", "Bluetooth", Icons.Filled.Bluetooth, Color.Blue)
+    object Bluetooth : SourceGroup("bluetooth", "Bluetooth", Icons.Filled.Bluetooth, Color.Blue)
 }
 
 

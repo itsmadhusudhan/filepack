@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -30,15 +29,31 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.shreekaram.filepack.navigation.Route
 import java.io.File
+import java.io.FileFilter
 import kotlin.math.roundToInt
 
 
+class ImageFileFilter : FileFilter {
+    override fun accept(file: File?): Boolean {
+        if (file?.isFile == true && file?.name?.endsWith(".jpg") == true || file?.name?.endsWith(".png") == true) {
+            return true
+        }
+
+        return false
+    }
+}
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun FolderspaceScreen(navController: NavHostController, folderName: String?) {
+fun FolderSpaceScreen(navController: NavHostController, folderName: String?, groupType: String) {
+    Log.d("SPACE", groupType);
+
     val photos = remember {
         val path = Environment.getExternalStorageDirectory().toString() + folderName
         val directory = File(path)
+        directory.walk().forEach {
+            println(it)
+        }
         val files = directory.listFiles()
 
         if (files === null) {
@@ -49,7 +64,10 @@ fun FolderspaceScreen(navController: NavHostController, folderName: String?) {
     }
 
     Scaffold {
-        LazyColumn() {
+        if (folderName != null) {
+            Text(folderName)
+        }
+        LazyColumn {
             if (photos !== null)
                 items(photos.size) {
                     val file = photos[it]
@@ -63,8 +81,7 @@ fun FolderspaceScreen(navController: NavHostController, folderName: String?) {
                             }
                             .fillMaxSize()
                             .padding(20.dp),
-
-                        ) {
+                    ) {
                         if (file.isDirectory) {
                             Icon(Icons.Filled.Folder, "Folder")
                         } else {

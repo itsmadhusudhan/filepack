@@ -8,5 +8,9 @@ sealed class Route(var id: String, var title: String, var args: String = "") {
 
     object Search : Route("search", "Search")
     object Settings : Route("settings", "Settings")
-    object FolderSpace : Route("folder_space", "FolderSpace", args = "?folderName={folderName}")
+    object FolderSpace : Route(
+        "folder_space",
+        "FolderSpace",
+        args = "?folderName={folderName}&groupType={groupType}"
+    )
 }

@@ -46,9 +46,9 @@ val groupsList = listOf(
 )
 
 val sourcesGroup = listOf(
-    Groups.WhatsApp,
-    Groups.Downloads,
-    Groups.Bluetooth
+    SourceGroup.WhatsApp,
+    SourceGroup.Downloads,
+    SourceGroup.Bluetooth
 )
 
 class NoRippleInteractionSource : MutableInteractionSource {
@@ -99,7 +99,7 @@ fun FilesGroupScreen(navController: NavHostController) {
             items(groupsList, key = { it.id }) { group ->
                 BaseGroupCard(
                     interactionSource,
-                    onClick = { navController.navigate(Route.FolderSpace.id) },
+                    onClick = { navController.navigate("${Route.FolderSpace.id}?groupType=${group.id.name}") },
                 ) {
                     Icon(group.icon, group.title, tint = MaterialTheme.colors.primary)
                     Spacer(modifier = Modifier.height(4.dp))
@@ -124,12 +124,8 @@ fun LazyGridScope.sourceGroup() {
             elevation = 1.dp,
             modifier = Modifier
                 .clip(AbsoluteRoundedCornerShape(20.dp))
-
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
+            Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier

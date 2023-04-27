@@ -1,6 +1,5 @@
 package com.shreekaram.filepack.navigation
 
-import android.util.Log
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -8,8 +7,24 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.shreekaram.filepack.screens.folderspace.FolderspaceScreen
+import com.shreekaram.filepack.screens.files.GroupType
+import com.shreekaram.filepack.screens.folderspace.FolderSpaceScreen
 import com.shreekaram.filepack.screens.home.HomeScreen
+
+//class GroupNavType : NavType<GroupType>(isNullableAllowed = false) {
+//    override fun get(bundle: Bundle, key: String): GroupType? {
+//        return bundle.getParcelable(key)
+//    }
+//
+//    override fun parseValue(value: String): GroupType {
+//        return GroupType.valueOf(value)
+//    }
+//
+//    override fun put(bundle: Bundle, key: String, value: GroupType) {
+//        bundle.putParcelable(key, value)
+//    }
+//
+//}
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {
@@ -21,21 +36,22 @@ fun RootNavigationGraph(navController: NavHostController) {
                 navArgument("folderName") {
                     type = NavType.StringType
                     defaultValue = "/"
+                },
+                navArgument("groupType") {
+                    type = NavType.StringType
+                    defaultValue = GroupType.ALL.name
                 }
             )
         ) {
-
-
             val folderName = it.arguments?.getString("folderName")
-
-            if (folderName != null) {
-                Log.d("ARGS", folderName)
-            }
+            val groupType = it.arguments?.getString("groupType")!!
 
 
-            FolderspaceScreen(
+
+            FolderSpaceScreen(
                 navController = navController,
-                folderName = folderName
+                folderName = folderName,
+                groupType = groupType
             )
         }
 
