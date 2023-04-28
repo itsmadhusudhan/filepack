@@ -15,4 +15,4 @@ You can read them below.
 3. [Day 03](docs/dev_log_03.md)
 4. [Day 04](docs/dev_log_04.md)
 5. [Day 05](docs/dev_log_05.md)
-6. [Day 05](docs/dev_log_06.md)
+6. [Day 06](docs/dev_log_06.md)
