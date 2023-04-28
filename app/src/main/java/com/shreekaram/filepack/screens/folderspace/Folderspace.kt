@@ -28,17 +28,62 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.shreekaram.filepack.navigation.Route
+import com.shreekaram.filepack.screens.files.GroupType
 import java.io.File
 import java.io.FileFilter
 import kotlin.math.roundToInt
 
 
 class ImageFileFilter : FileFilter {
-    override fun accept(file: File?): Boolean {
-        if (file?.isFile == true && file?.name?.endsWith(".jpg") == true || file?.name?.endsWith(".png") == true) {
+    override fun accept(file: File): Boolean {
+        if (file.isFile && file.name.endsWith(".jpg") || file.name.endsWith(".png")) {
             return true
         }
+        return false
+    }
+}
 
+class AudioFileFilter : FileFilter {
+    override fun accept(file: File): Boolean {
+        if (file.isFile && file.name.endsWith(".mp3") || file.name.endsWith(".wav")) {
+            return true
+        }
+        return false
+    }
+}
+
+class VideoFileFilter : FileFilter {
+    override fun accept(file: File): Boolean {
+        if (file.isFile && file.name.endsWith(".mp4")) {
+            return true
+        }
+        return false
+    }
+}
+
+class DocumentFilter : FileFilter {
+    override fun accept(file: File): Boolean {
+        if (file.isFile && file.name.endsWith(".pdf") || file.name.endsWith(".docx")) {
+            return true
+        }
+        return false
+    }
+}
+
+class ApkFilter : FileFilter {
+    override fun accept(file: File): Boolean {
+        if (file.isFile && file.name.endsWith(".aab") || file.name.endsWith(".apk")) {
+            return true
+        }
+        return false
+    }
+}
+
+class ArchiveFilter : FileFilter {
+    override fun accept(file: File): Boolean {
+        if (file.isFile && file.name.endsWith(".zip") || file.name.endsWith(".7z")) {
+            return true
+        }
         return false
     }
 }
@@ -46,19 +91,59 @@ class ImageFileFilter : FileFilter {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun FolderSpaceScreen(navController: NavHostController, folderName: String?, groupType: String) {
-    Log.d("SPACE", groupType);
-
     val photos = remember {
         val path = Environment.getExternalStorageDirectory().toString() + folderName
         val directory = File(path)
-        directory.walk().forEach {
-            println(it)
-        }
-        val files = directory.listFiles()
 
-        if (files === null) {
-            Log.d("ARGS", "DON'T HAVE FILES")
+        var files = arrayOf<File>()
+        var filter: FileFilter? = null
+
+        // FIXME: refactor better may be using filter map
+        when (GroupType.valueOf(groupType)) {
+            GroupType.PHOTO -> {
+                filter = ImageFileFilter()
+            }
+
+            GroupType.VIDEO -> {
+                filter = VideoFileFilter()
+            }
+
+            GroupType.AUDIO -> {
+                filter = AudioFileFilter()
+            }
+
+            GroupType.DOCUMENT -> {
+                filter = DocumentFilter()
+            }
+
+            GroupType.APK -> {
+                filter = ApkFilter()
+            }
+
+            GroupType.ARCHIVE -> {
+                filter = ArchiveFilter()
+            }
+
+            else -> {
+                val _files = directory.listFiles()
+                if (_files !== null) {
+                    files = _files
+                }
+            }
         }
+
+        if (GroupType.valueOf(groupType) !== GroupType.ALL && filter !== null) {
+            directory.walk().forEach {
+                Log.d("FILES", it.name)
+
+                if (it.isFile && filter.accept(it)) {
+
+                    files = files.plus(it)
+                }
+            }
+        }
+
+        Log.d("FILES", files.size.toString())
 
         files
     }
@@ -68,46 +153,45 @@ fun FolderSpaceScreen(navController: NavHostController, folderName: String?, gro
             Text(folderName)
         }
         LazyColumn {
-            if (photos !== null)
-                items(photos.size) {
-                    val file = photos[it]
+            items(photos.size) {
+                val file = photos[it]
 
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
-                            .clickable() {
-                                if (file.isDirectory)
-                                    navController.navigate(Route.FolderSpace.id + "?" + "folderName=${folderName}/${file.name}")
-                            }
-                            .fillMaxSize()
-                            .padding(20.dp),
-                    ) {
-                        if (file.isDirectory) {
-                            Icon(Icons.Filled.Folder, "Folder")
-                        } else {
-                            if (file.name.endsWith(".jpg")) {
-                                AsyncImage(
-                                    model = file.absolutePath,
-                                    contentDescription = file.name,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                )
-                            } else {
-                                Icon(Icons.Filled.InsertDriveFile, "File")
-                            }
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .clickable() {
+                            if (file.isDirectory)
+                                navController.navigate(Route.FolderSpace.id + "?" + "folderName=${folderName}/${file.name}")
                         }
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            modifier = Modifier
-                                .padding(horizontal = 12.dp)
-                        ) {
-                            Text(file.name)
-                            if (file.isFile) Text("${(file.sizeInMb * 100.0).roundToInt() / 100.0}Mb")
+                        .fillMaxSize()
+                        .padding(20.dp),
+                ) {
+                    if (file.isDirectory) {
+                        Icon(Icons.Filled.Folder, "Folder")
+                    } else {
+                        if (file.name.endsWith(".jpg") || file.name.endsWith(".jpeg")) {
+                            AsyncImage(
+                                model = file.absolutePath,
+                                contentDescription = file.name,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                            )
+                        } else {
+                            Icon(Icons.Filled.InsertDriveFile, "File")
                         }
                     }
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
+                    ) {
+                        Text(file.name)
+                        if (file.isFile) Text("${(file.sizeInMb * 100.0).roundToInt() / 100.0}Mb")
+                    }
                 }
+            }
         }
     }
 }
