@@ -16,3 +16,4 @@ You can read them below.
 4. [Day 04](docs/dev_log_04.md)
 5. [Day 05](docs/dev_log_05.md)
 6. [Day 06](docs/dev_log_06.md)
+7. [Day 07](docs/dev_log_07.md)
