@@ -28,6 +28,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.shreekaram.filepack.LocalFileViewModel
 import com.shreekaram.filepack.navigation.Route
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -61,6 +63,8 @@ class NoRippleInteractionSource : MutableInteractionSource {
 @Composable
 fun FilesGroupScreen(navController: NavHostController) {
     val interactionSource = remember { NoRippleInteractionSource() }
+    val fileViewModel = LocalFileViewModel.current
+    val files = fileViewModel.files.collectAsState().value
 
     Scaffold(
         topBar = { AppBar(navController) },
@@ -104,7 +108,9 @@ fun FilesGroupScreen(navController: NavHostController) {
                     Icon(group.icon, group.title, tint = MaterialTheme.colors.primary)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(group.title, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                    Text("1947", fontSize = 12.sp, color = Color.Gray)
+                    if (files != null) {
+                        Text(files.size.toString(), fontSize = 12.sp, color = Color.Gray)
+                    }
                 }
             }
 

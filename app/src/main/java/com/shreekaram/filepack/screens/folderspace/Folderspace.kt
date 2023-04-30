@@ -24,11 +24,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.InsertDriveFile
-import androidx.compose.material.icons.outlined.GridOn
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.shreekaram.filepack.LocalFileViewModel
 import com.shreekaram.filepack.navigation.Route
 import com.shreekaram.filepack.screens.files.GroupType
 import com.shreekaram.filepack.widgets.TopAppBarActionButton
@@ -120,6 +121,8 @@ val filtersMap = mapOf(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun FolderSpaceScreen(navController: NavHostController, folderName: String?, groupType: String) {
+    val fileViewModel = LocalFileViewModel.current
+    val docs = fileViewModel.files.collectAsState().value
     var layoutType by remember { mutableStateOf(LayoutType.LIST) }
     val documents = remember {
         val path = Environment.getExternalStorageDirectory().toString() + folderName
@@ -129,11 +132,8 @@ fun FolderSpaceScreen(navController: NavHostController, folderName: String?, gro
         var filter: FileFilter? = filtersMap.get(GroupType.valueOf(groupType))
 
         if (filter !== null) {
-            directory.walk().forEach {
-                Log.d("FILES", it.name)
-
+            docs.forEach {
                 if (it.isFile && filter.accept(it)) {
-
                     files = files.plus(it)
                 }
             }
