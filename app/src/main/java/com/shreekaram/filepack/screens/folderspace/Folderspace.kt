@@ -124,12 +124,24 @@ fun FolderSpaceScreen(navController: NavHostController, folderName: String?, gro
     val fileViewModel = LocalFileViewModel.current
     val docs = fileViewModel.files.collectAsState().value
     var layoutType by remember { mutableStateOf(LayoutType.LIST) }
+    val photos = remember {
+        when (GroupType.valueOf(groupType)) {
+            GroupType.PHOTO -> {
+                docs.groupBy { it -> it.parentFile?.parent ?: it.name }
+            }
+
+            else -> {
+                mapOf<String, List<File>>()
+            }
+        }
+    }
+
     val documents = remember {
         val path = Environment.getExternalStorageDirectory().toString() + folderName
         val directory = File(path)
 
         var files = arrayOf<File>()
-        var filter: FileFilter? = filtersMap.get(GroupType.valueOf(groupType))
+        var filter: FileFilter? = filtersMap[GroupType.valueOf(groupType)]
 
         if (filter !== null) {
             docs.forEach {
@@ -182,59 +194,37 @@ fun FolderSpaceScreen(navController: NavHostController, folderName: String?, gro
             Text(folderName)
         }
 
-        when (layoutType) {
-            LayoutType.GRID -> {
-                LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-                    items(documents.size) {
-                        val file = documents[it]
-
-                        Column(
-                            modifier = Modifier
-                                .clickable { navigate(file) }
-                                .fillMaxSize()
-                                .padding(12.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            if (file.name.endsWith(".jpg") || file.name.endsWith(".jpeg")) {
-                                AsyncImage(
-                                    model = file.absolutePath,
-                                    contentDescription = file.name,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                )
-                            } else {
-                                Icon(
-                                    Icons.Filled.Folder,
-                                    file.name,
-                                    tint = MaterialTheme.colors.primary,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.padding(bottom = 8.dp))
-                            Text(file.name, fontSize = 13.sp)
+        if (photos.isNotEmpty()) {
+            LazyVerticalGrid(columns = GridCells.Fixed(3)) {
+                photos.forEach { group ->
+                    item {
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            Text(text = group.key)
                         }
                     }
+//                    items(group.value.toList()) { photo ->
+//                        Column(modifier = Modifier.padding(20.dp)) {
+//                            Text(photo.name)
+//                        }
+//                    }
                 }
             }
+        } else
 
-            LayoutType.LIST -> {
-                LazyColumn {
-                    items(documents.size) {
-                        val file = documents[it]
+            when (layoutType) {
+                LayoutType.GRID -> {
+                    LazyVerticalGrid(columns = GridCells.Fixed(3)) {
+                        items(documents.size) {
+                            val file = documents[it]
 
-                        Row(
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier
-                                .clickable { navigate(file) }
-                                .fillMaxSize()
-                                .padding(20.dp),
-                        ) {
-                            if (file.isDirectory) {
-                                Icon(Icons.Filled.Folder, "Folder")
-                            } else {
+                            Column(
+                                modifier = Modifier
+                                    .clickable { navigate(file) }
+                                    .fillMaxSize()
+                                    .padding(12.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 if (file.name.endsWith(".jpg") || file.name.endsWith(".jpeg")) {
                                     AsyncImage(
                                         model = file.absolutePath,
@@ -242,26 +232,65 @@ fun FolderSpaceScreen(navController: NavHostController, folderName: String?, gro
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
                                             .size(40.dp)
-                                            .clip(RoundedCornerShape(12.dp))
                                     )
                                 } else {
-                                    Icon(Icons.Filled.InsertDriveFile, "File")
+                                    Icon(
+                                        Icons.Filled.Folder,
+                                        file.name,
+                                        tint = MaterialTheme.colors.primary,
+                                        modifier = Modifier.size(48.dp)
+                                    )
                                 }
-                            }
-                            Column(
-                                horizontalAlignment = Alignment.Start,
-                                modifier = Modifier
-                                    .padding(horizontal = 12.dp)
-                            ) {
-                                Text(file.name)
-                                if (file.isFile) Text("${(file.sizeInMb * 100.0).roundToInt() / 100.0}Mb")
+
+                                Spacer(modifier = Modifier.padding(bottom = 8.dp))
+                                Text(file.name, fontSize = 13.sp)
                             }
                         }
                     }
                 }
 
+                LayoutType.LIST -> {
+                    LazyColumn {
+                        items(documents.size) {
+                            val file = documents[it]
+
+                            Row(
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier
+                                    .clickable { navigate(file) }
+                                    .fillMaxSize()
+                                    .padding(20.dp),
+                            ) {
+                                if (file.isDirectory) {
+                                    Icon(Icons.Filled.Folder, "Folder")
+                                } else {
+                                    if (file.name.endsWith(".jpg") || file.name.endsWith(".jpeg")) {
+                                        AsyncImage(
+                                            model = file.absolutePath,
+                                            contentDescription = file.name,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .clip(RoundedCornerShape(12.dp))
+                                        )
+                                    } else {
+                                        Icon(Icons.Filled.InsertDriveFile, "File")
+                                    }
+                                }
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    modifier = Modifier
+                                        .padding(horizontal = 12.dp)
+                                ) {
+                                    Text(file.name)
+                                    if (file.isFile) Text("${(file.sizeInMb * 100.0).roundToInt() / 100.0}Mb")
+                                }
+                            }
+                        }
+                    }
+
+                }
             }
-        }
 
     }
 }
