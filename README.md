@@ -19,3 +19,4 @@ You can read them below.
 7. [Day 07](docs/dev_log_07.md)
 8. [Day 08](docs/dev_log_08.md)
 9. [Day 09](docs/dev_log_09.md)
+10. [Day 10](docs/dev_log_10.md)
